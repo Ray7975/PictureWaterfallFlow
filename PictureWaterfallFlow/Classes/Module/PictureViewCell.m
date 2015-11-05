@@ -10,7 +10,6 @@
 
 @interface PictureViewCell ()
 
-@property (strong, nonatomic) UIImageView *pictureImage;
 
 @end
 
@@ -32,6 +31,7 @@
 
 //设置显示数据
 - (void)setShowData:(NSString *)_picName {
+    [_pictureImage setFrame:self.bounds];
     [_pictureImage setImage:[UIImage imageNamed:_picName]];
 }
 

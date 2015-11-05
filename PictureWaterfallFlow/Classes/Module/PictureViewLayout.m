@@ -38,13 +38,11 @@
     CGFloat height = [self maxCellYWithArray:_cellYArray];
     height += sectionInsets.bottom;
 
-    NSLog(@"height is %f",height);
     return CGSizeMake(CGRectGetWidth(self.collectionView.frame), height);
 }
 
 //每个cell的Layout属性列表
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
-    NSLog(@"layoutAttributesForElementsInRect");
     [self initCellYArray];
     
     NSMutableArray *attributes = [NSMutableArray array];
@@ -64,7 +62,7 @@
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
     
-    //子对象大笑
+    //子对象大小
     CGSize itemSize = [self.layoutDelegate collectionView:self.collectionView layout:self sizeForItemAtIndexPath:indexPath];
     //section边距
     UIEdgeInsets sectionInsets = [self.layoutDelegate collectionView:self.collectionView layout:self insetForSectionAtIndex:indexPath.section];
@@ -72,19 +70,18 @@
     CGFloat minItemSpacing = [self.layoutDelegate collectionView:self.collectionView layout:self minimumInteritemSpacingForSectionAtIndex:indexPath.section];
     
     //当前列索引
-    NSInteger columnIndex = indexPath.row%_columnCount;
-    //当前行索引
-    NSInteger rowIndex = indexPath.row/_columnCount;
-    
+    NSInteger columnIndex = [self minCellYIndexWithArray:_cellYArray];
+    //indexPath.row%_columnCount;
+
     CGFloat originX = sectionInsets.left + (itemSize.width+minItemSpacing)*columnIndex;
     CGFloat originY = 0;
-    if (rowIndex == 0) {
+    if (indexPath.row < _columnCount) {
         originY = [_cellYArray[columnIndex] floatValue] + sectionInsets.top;
     } else {
         originY = [_cellYArray[columnIndex] floatValue] + minItemSpacing;
     }
     attributes.frame = CGRectMake(originX, originY, itemSize.width, itemSize.height);
-    NSLog(@"frame is %@",NSStringFromCGRect(attributes.frame));
+
     //更新cell y数组值
     _cellYArray[columnIndex] = @(originY + itemSize.height);
     
@@ -96,6 +93,14 @@
 //初始基本数据
 - (void)initData {
     _columnCount = [self.layoutDelegate numberOfColumnsInCollectionView:self.collectionView];
+}
+
+//初始cell Y数组
+- (void)initCellYArray {
+    _cellYArray = [NSMutableArray arrayWithCapacity:_columnCount];
+    for (NSInteger i = 0; i < _columnCount; i++) {
+        [_cellYArray addObject:@(0)];
+    }
 }
 
 //获取cell Y数组最大值
@@ -113,12 +118,23 @@
     return maxCellY;
 }
 
-//初始cell Y数组
-- (void)initCellYArray {
-    _cellYArray = [NSMutableArray arrayWithCapacity:_columnCount];
-    for (NSInteger i = 0; i < _columnCount; i++) {
-        [_cellYArray addObject:@(0)];
+//获取cell Y数组最小值索引
+- (NSInteger)minCellYIndexWithArray:(NSMutableArray *)array {
+    if (array == nil || array.count == 0) {
+        return 0;
     }
+    
+    NSInteger minIndex = 0;
+    CGFloat minCellY = [array[0] floatValue];
+    
+    for (NSInteger i = 0; i < array.count; i ++) {
+        CGFloat temp = [array[i] floatValue];
+        if (minCellY > temp) {
+            minCellY = temp;
+            minIndex = i;
+        }
+    }
+    return minIndex;
 }
 
 @end

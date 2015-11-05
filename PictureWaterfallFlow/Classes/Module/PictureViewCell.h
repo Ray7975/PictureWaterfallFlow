@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface PictureViewCell : UICollectionViewCell
+@property (strong, nonatomic) UIImageView *pictureImage;
 
 //设置显示数据
 - (void)setShowData:(NSString *)_picName;

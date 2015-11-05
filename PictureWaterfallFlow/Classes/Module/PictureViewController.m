@@ -15,7 +15,9 @@
 @property (nonatomic, strong) PictureViewLayout *collectionViewLayout;
 @property (nonatomic, strong) UICollectionView *collectionView;
 
+//图片列表
 @property (nonatomic, strong) NSMutableArray *picList;
+//图片列表数量
 @property (nonatomic, assign) NSInteger picListCount;
 //高度列表
 @property (nonatomic, strong) NSMutableArray *picHeightList;
@@ -44,7 +46,7 @@
 //设置导航条
 - (void)setNavigationBar {
     [self setTitle:@"瀑布流"];
-    
+
     //返回按钮
     UIButton *button_refresh = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [button_refresh setBackgroundColor:[UIColor yellowColor]];
@@ -63,14 +65,8 @@
 
 //加载视图
 - (void)loadSubviews {
-    _picList = [NSMutableArray arrayWithCapacity:20];
-    [_picList addObject:@"001.jpg"];
-    [_picList addObject:@"002.jpg"];
-    [_picList addObject:@"003.jpg"];
-    [_picList addObject:@"004.jpg"];
-    [_picList addObject:@"005.jpg"];
-    [_picList addObject:@"006.jpg"];
-    
+    //图片数据
+    _picList = [self randomArray];
     _picListCount = _picList.count;
     //列数量
     _columnCount = 2;
@@ -80,12 +76,30 @@
     _columnWidth = (CGRectGetWidth(self.view.bounds)-16.0f-_minItemSpacing)/_columnCount;
     
     _picHeightList = [NSMutableArray arrayWithCapacity:_picListCount];
-    for (NSInteger i = 0; i < _picListCount; i ++) {
+    for (NSInteger heightIndex = 0; heightIndex < _picListCount; heightIndex ++) {
         CGFloat temp_height = arc4random() % 175 + 125;
         [_picHeightList addObject:@(temp_height)];
     }
 
     [self.view addSubview:self.collectionView];
+}
+
+//随机数数组
+- (NSMutableArray *)randomArray {
+    //起始数组
+    NSMutableArray *startArray = [NSMutableArray arrayWithObjects:@"001.jpg",@"002.jpg",@"003.jpg",@"004.jpg",@"005.jpg",@"006.jpg",nil];
+    //起始数组数量
+    NSInteger startArrayCount = startArray.count;
+    
+    //结束数组
+    NSMutableArray *endArray = [NSMutableArray arrayWithCapacity:startArrayCount];
+    for (NSInteger i = 0; i < startArrayCount; i ++) {
+        NSInteger random = arc4random() % startArray.count;
+        endArray[i] = startArray[random];
+        startArray[random] = [startArray lastObject];
+        [startArray removeLastObject];
+    }
+    return endArray;
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
@@ -99,7 +113,6 @@
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(PictureViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"height is %@",_picHeightList[indexPath.row]);
     return CGSizeMake(_columnWidth, [_picHeightList[indexPath.row] floatValue]);
 }
 
@@ -117,8 +130,6 @@
     return _picListCount;
 }
 
-#pragma mark - UICollectionView Delegate
-
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PictureViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PictureViewCell class]) forIndexPath:indexPath];
     
@@ -126,14 +137,28 @@
     if (picName != nil && ![picName isEqualToString:@""]) {
         [cell setShowData:picName];
     }
-    
     return cell;
 }
+
+#pragma mark - UICollectionView Delegate
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"selected section is %d, row is %d",indexPath.section,indexPath.row);
+}
+
 
 #pragma mark - UIResponse Event
 
 //刷新按钮点击事件
 - (void)refreshButtonClick:(id)sender {
+
+    _picList = [self randomArray];
+    
+    for (NSInteger heightIndex = 0; heightIndex < _picListCount; heightIndex ++) {
+        CGFloat temp_height = arc4random() % 175 + 125;
+        [_picHeightList replaceObjectAtIndex:heightIndex withObject:@(temp_height)];
+    }
+    
     [self.collectionView reloadData];
 }
 
