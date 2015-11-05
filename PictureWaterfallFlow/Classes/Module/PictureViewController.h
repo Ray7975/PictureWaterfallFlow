@@ -10,9 +10,4 @@
 
 @interface PictureViewController : UIViewController
 
-//列数量
-@property (nonatomic, assign) NSInteger columnCount;
-//cell子对象间距
-@property (nonatomic, assign) CGFloat minItemSpacing;
-
 @end

@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@class PictureViewLayout;
-
 @protocol PictureViewLayoutDelegate <NSObject>
 @required
 #pragma mark - 自定义
@@ -17,11 +15,11 @@
 - (NSInteger)numberOfColumnsInCollectionView:(UICollectionView *)collectionView;
 #pragma mark - UICollectionViewDelegateFlowLayout
 //section边距
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(PictureViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 //最小子对象间距
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(PictureViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section;
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section;
 //子对象尺寸
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(PictureViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath;
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath;
 @end
 
 @interface PictureViewLayout : UICollectionViewLayout

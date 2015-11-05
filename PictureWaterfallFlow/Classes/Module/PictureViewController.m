@@ -15,14 +15,22 @@
 @property (nonatomic, strong) PictureViewLayout *collectionViewLayout;
 @property (nonatomic, strong) UICollectionView *collectionView;
 
+
 //图片列表
 @property (nonatomic, strong) NSMutableArray *picList;
 //图片列表数量
 @property (nonatomic, assign) NSInteger picListCount;
-//高度列表
-@property (nonatomic, strong) NSMutableArray *picHeightList;
+
+//列数量
+@property (nonatomic, assign) NSInteger columnCount;
+//cell子对象间距
+@property (nonatomic, assign) CGFloat minItemSpacing;
+//section边距
+@property (nonatomic, assign) UIEdgeInsets sectionInsets;
 //列宽度
 @property (nonatomic, assign) CGFloat columnWidth;
+//高度列表
+@property (nonatomic, strong) NSMutableArray *picHeightList;
 
 @end
 
@@ -68,6 +76,17 @@
     //图片数据
     _picList = [self randomArray];
     _picListCount = _picList.count;
+    
+    //设置layout属性
+    [self initCollectionViewLayoutData];
+
+    [self.view addSubview:self.collectionView];
+}
+
+//设置layout属性
+- (void)initCollectionViewLayoutData {
+    //section边距
+    _sectionInsets = UIEdgeInsetsMake(8.0f, 8.0f, 8.0f, 8.0f);
     //列数量
     _columnCount = 2;
     //cell子对象间距
@@ -80,8 +99,6 @@
         CGFloat temp_height = arc4random() % 175 + 125;
         [_picHeightList addObject:@(temp_height)];
     }
-
-    [self.view addSubview:self.collectionView];
 }
 
 //随机数数组
@@ -102,21 +119,21 @@
     return endArray;
 }
 
-#pragma mark - UICollectionViewDelegateFlowLayout
+#pragma mark - PictureViewLayoutDelegate
 
 - (NSInteger)numberOfColumnsInCollectionView:(UICollectionView *)collectionView {
     return _columnCount;
 }
 
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(PictureViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    return UIEdgeInsetsMake(8.0f, 8.0f, 8.0f, 8.0f);
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    return _sectionInsets;
 }
 
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(PictureViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     return CGSizeMake(_columnWidth, [_picHeightList[indexPath.row] floatValue]);
 }
 
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(PictureViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     return _minItemSpacing;
 }
 
@@ -143,9 +160,7 @@
 #pragma mark - UICollectionView Delegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"selected section is %d, row is %d",indexPath.section,indexPath.row);
 }
-
 
 #pragma mark - UIResponse Event
 
